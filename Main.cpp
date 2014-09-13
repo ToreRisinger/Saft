@@ -1,12 +1,19 @@
-#include <SDL.h>
-#include <SDL_image.h>
-#include <stdio.h>
 #include <string>
 #include <sstream>
-#include "Timer.h"
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+#include <SDL.h>
+#include <SDL_image.h>
 #include "Input.h"
+#include "Util.h"
+#include "Texture.h"
+#include "Rectangle.h"
+#include "Player.h"
+#include "Timer.h"
+#include "Button.h"
+#include "Menu.h"
 #include "Game.h"
-#include "Renderer.h"
 
 bool init();
 void close();
@@ -16,9 +23,9 @@ void drawScreen();
 SDL_Surface* loadSurface(std::string path);
 SDL_Texture* loadTexture(std::string path);
 
-SDL_Window* gWindow = NULL;
 //SDL_Surface* gScreenSurface = NULL; vi använder inte denna atm
-SDL_Renderer* Renderer::gRenderer = NULL;
+SDL_Window* gWindow = nullptr;
+Input* input = nullptr;
 
 const int SCREEN_WIDTH = 640;
 const int SCREEN_HEIGHT = 480;
@@ -38,8 +45,8 @@ int main(int argc, char* args[])
 		Timer loopTime;
 		loopTime.start();
 		SDL_Event e;
-		Input input;
 		Game game;
+		input = new Input();
 
 		//GAMELOOP
 		while (isRunning)
@@ -54,7 +61,7 @@ int main(int argc, char* args[])
 				if (e.type == SDL_QUIT)
 					isRunning = false;
 				else
-					input.getEvent(&e);
+					input->getEvent(&e);
 			}
 			
 			game.input(input);
@@ -63,7 +70,7 @@ int main(int argc, char* args[])
 			
 			//--------------UPDATE--------------
 
-			input.update(); //update the input class
+			input->update(); //update the input class
 			game.update(); // update game
 
 			//----------------------------------
@@ -102,12 +109,12 @@ int main(int argc, char* args[])
 
 void drawScreen()
 {
-	SDL_RenderPresent(Renderer::gRenderer);
+	SDL_RenderPresent(gRenderer);
 }
 
 void clearScreen()
 {
-	SDL_RenderClear(Renderer::gRenderer);
+	SDL_RenderClear(gRenderer);
 }
 
 bool init()
@@ -131,8 +138,8 @@ bool init()
 		else
 		{
 			//Create renderer for window
-			Renderer::gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-			if (Renderer::gRenderer == NULL)
+			gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+			if (gRenderer == NULL)
 			{
 				printf("Renderer could not be created! SDL Error: %s\n", SDL_GetError());
 				success = false;
@@ -140,7 +147,7 @@ bool init()
 			else
 			{
 				//Initialize renderer color
-				SDL_SetRenderDrawColor(Renderer::gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
+				SDL_SetRenderDrawColor(gRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
 
 				//Initialize PNG loading
 				int imgFlags = IMG_INIT_PNG;
@@ -159,10 +166,10 @@ bool init()
 void close()
 {
 	//Destroy window    
-	SDL_DestroyRenderer(Renderer::gRenderer);
+	SDL_DestroyRenderer(gRenderer);
 	SDL_DestroyWindow(gWindow);
 	gWindow = NULL;
-	Renderer::gRenderer = NULL;
+	gRenderer = NULL;
 
 	//Quit SDL subsystems
 	IMG_Quit();

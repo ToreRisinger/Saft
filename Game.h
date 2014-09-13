@@ -1,7 +1,3 @@
-#include "Rectangle.h"
-#include <vector>
-#include "Player.h"
-
 class Game
 {
 public:
@@ -9,51 +5,69 @@ public:
 	~Game();
 	void render();
 	void update();
-	void input(Input& input);
-
+	void input(Input* input);
 private:
-	//TODO all game objects in a vector
 	std::vector<Rectangle*> rectangles;
 	Player* player = nullptr;
+	Menu* mainmenu = nullptr;
 };
 
 Game::Game()
 {
 	player = new Player();
+
+	mainmenu = new Menu();
+	mainmenu->addBackground(640, 480, 100, 80, 80);
+	mainmenu->addButton("button1", GAME, 64, 32, 32, 32);
+	mainmenu->addButton("button1", MAINMENU, 64, 32, 32, 128);
+
 	for (int x = 0; x < 20; ++x)
 	{
 		for (int y = 7; y < 15; ++y)
 		{
-			Rectangle* rect = new Rectangle();
-			rect->setTexture("bricks_darkyellow_medium.png");
-			rect->setWidth(32);
-			rect->setHeight(32);
-			rect->setX(x*32);
-			rect->setY(y*32);
+			Rectangle* rect = new Rectangle("bricks_darkyellow_medium", 32, 32, x*32, y*32);
 			rectangles.push_back(rect);
 		}
 	}
-	
 }
 
-Game::~Game()
-{
-	
-}
+Game::~Game() {}
 
 void Game::render()
 {
-	for (Rectangle* rect : rectangles)
-		rect->render();
-	player->render();
+	if (state == MAINMENU)
+	{
+		mainmenu->render();
+	}
+	else if (state == GAME)
+	{
+		for (Rectangle* rect : rectangles)
+			rect->render();
+		
+		player->render();
+	}
 }
 
 void Game::update()
 {
-	player->update();
+	if (state == MAINMENU)
+	{
+		mainmenu->update();
+	}
+	else if (state == GAME)
+	{
+		player->update();
+	}
 }
 
-void Game::input(Input& input)
+void Game::input(Input* input)
 {
-	player->input(input);
+	if (state == MAINMENU)
+	{
+		mainmenu->input(input);
+	}
+	else if (state == GAME)
+	{
+		player->input(input);
+	}
 }

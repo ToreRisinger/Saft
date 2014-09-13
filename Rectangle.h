@@ -1,14 +1,15 @@
-#include "Texture.h"
-#include <string>
+
 
 class Rectangle
 {
 public:
-	Rectangle();
+	//create rectangle with a texture loaded from file
+	Rectangle(std::string fileName, int width, int height, int x, int y);
+	//create rectangle with a texture with a color
+	Rectangle(int width, int height, int red, int green, int blue, int x, int y);
 	~Rectangle();
 
 	void render();
-	void setTexture(std::string fileName);
 	void setX(int value);
 	int getX();
 	void setY(int value);
@@ -20,19 +21,28 @@ public:
 	
 private:
 	Texture* texture = nullptr;
-	int x;
-	int y;
-	int width;
-	int height;
+	int _x;
+	int _y;
+	int _width;
+	int _height;
 };
 
-Rectangle::Rectangle()
+Rectangle::Rectangle(std::string fileName, int width, int height ,int x, int y)
 {
-	texture = new Texture("default_texture.png");
-	x = 0;
-	y = 0;
-	width = 0;
-	height = 0;
+	texture = new Texture(fileName);
+	_x = x;
+	_y = y;
+	_width = width;
+	_height = height;
+}
+
+Rectangle::Rectangle(int width, int height, int red, int green, int blue, int x, int y)
+{
+	texture = new Texture(width, height, red, green, blue);
+	_x = x;
+	_y = y;
+	_width = width;
+	_height = height;
 }
 
 Rectangle::~Rectangle()
@@ -43,49 +53,44 @@ Rectangle::~Rectangle()
 
 void Rectangle::render()
 {
-	texture->render(x, y, width, height);
-}
-
-void Rectangle::setTexture(std::string fileName)
-{
-	texture->loadTexture(fileName);
+	texture->render(_x, _y, _width, _height);
 }
 
 void Rectangle::setX(int value)
 {
-	x = value;
+	_x = value;
 }
 
 int Rectangle::getX()
 {
-	return x;
+	return _x;
 }
 
 void Rectangle::setY(int value)
 {
-	y = value;
+	_y = value;
 }
 
 int Rectangle::getY()
 {
-	return y;
+	return _y;
 }
 void Rectangle::setWidth(int value)
 {
-	width = value;
+	_width = value;
 }
 
 int Rectangle::getWidth()
 {
-	return width;
+	return _width;
 }
 
 void Rectangle::setHeight(int value)
 {
-	height = value;
+	_height = value;
 }
 
 int Rectangle::getHeight()
 {
-	return height;
+	return _height;
 }
