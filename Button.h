@@ -2,7 +2,7 @@
 class Button
 {
 public:
-	Button(std::string fileName, STATE state, int width, int height, int x, int y);
+	Button(std::string textureFileName, std::string buttonText, unsigned int fontSize, SDL_Color textColor, int textX, int textY, STATE state, int width, int height, int x, int y);
 	~Button();
 
 	void render();
@@ -12,24 +12,32 @@ public:
 	void deselect();
 
 private:
-	Rectangle* selectedRect;
-	Rectangle* deselectedRect;
+	Texture* deselectedTexture = nullptr;
+	Texture* selectedTexture = nullptr;
+	Texture* deselectedText = nullptr;
+	Texture* selectedText = nullptr;
 	STATE _state;
 	bool _selected;
 	int _x;
 	int _y;
+	int _textX;
+	int _textY;
 	int _width;
 	int _height;
 
 };
 
-Button::Button(std::string fileName, STATE state, int width, int height, int x, int y)
+Button::Button(std::string textureFileName, std::string buttonText, unsigned int fontSize, SDL_Color textColor, int textX, int textY, STATE state, int width, int height, int x, int y)
 {
-	deselectedRect = new Rectangle(fileName + "_deselected", width, height, x, y);
-	selectedRect = new Rectangle(fileName + "_selected", width, height, x, y);
+	deselectedTexture = new Texture(textureFileName + "_deselected");
+	selectedTexture = new Texture(textureFileName + "_selected");
+	deselectedText = new Texture(buttonText, fontSize, textColor);
+	selectedText = new Texture(buttonText, fontSize, textColor);
 	_selected = false;
 	_x = x;
 	_y = y;
+	_textX = textX;
+	_textY = textY;
 	_width = width;
 	_height = height;
 	_state = state;
@@ -43,9 +51,15 @@ Button::~Button()
 void Button::render()
 {
 	if (_selected)
-		selectedRect->render();
+	{
+		selectedTexture->render(_x, _y, _width, _height);
+		selectedText->render(_textX+2, _textY+2, selectedText->getWidth(), selectedText->getHeight());
+	}
 	else if (!_selected)
-		deselectedRect->render();
+	{
+		deselectedTexture->render(_x, _y, _width, _height);
+		deselectedText->render(_textX, _textY, selectedText->getWidth(), selectedText->getHeight());
+	}
 }
 
 void Button::update()

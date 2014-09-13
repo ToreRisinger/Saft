@@ -8,13 +8,13 @@ public:
 	void render();
 	void update();
 	void input(Input* input);
-	void addButton(std::string fileName, STATE state, int width, int height, int x, int y);
+	void addButton(std::string textureFileName, std::string buttonText, unsigned int fontSize, SDL_Color textColor, int textX, int textY, STATE state, int width, int height, int x, int y);
 	void addBackground(int width, int height, int red, int green, int blue);
 
 private:
 	Rectangle* background = nullptr;
 	std::vector<Button*> buttons;
-	int selectedButton;
+	unsigned int selectedButton;
 };
 
 Menu::Menu()
@@ -24,7 +24,11 @@ Menu::Menu()
 
 Menu::~Menu()
 {
-
+	for (unsigned int i = 0; i < buttons.size(); i++)
+	{
+		delete buttons.at(i);
+		buttons.pop_back();
+	}
 }
 
 void Menu::render()
@@ -47,7 +51,7 @@ void Menu::update()
 void Menu::input(Input* input)
 {
 	//move up and down in the menu
-	if (input->getKey(SDL_SCANCODE_DOWN))
+	if (input->getKeyPressed(SDL_SCANCODE_DOWN))
 	{	
 		if (selectedButton + 1 < buttons.size())
 		{
@@ -56,7 +60,7 @@ void Menu::input(Input* input)
 			buttons.at(selectedButton)->select();
 		}
 	}
-	else if (input->getKey(SDL_SCANCODE_UP))
+	else if (input->getKeyPressed(SDL_SCANCODE_UP))
 	{
 		if (selectedButton > 0)
 		{
@@ -74,9 +78,9 @@ void Menu::input(Input* input)
 	}
 }
 
-void Menu::addButton(std::string fileName, STATE state, int width, int height, int x, int y)
+void Menu::addButton(std::string textureFileName, std::string buttonText, unsigned int fontSize, SDL_Color textColor, int textX, int textY, STATE state, int width, int height, int x, int y)
 {
-	Button* newButton = new Button(fileName, state, width, height, x, y);
+	Button* newButton = new Button(textureFileName, buttonText, fontSize, textColor, textX, textY, state, width, height, x, y);
 	buttons.push_back(newButton);
 	
 	//select first button in the vector

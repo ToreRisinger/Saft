@@ -17,9 +17,14 @@ Game::Game()
 	player = new Player();
 
 	mainmenu = new Menu();
+
 	mainmenu->addBackground(640, 480, 100, 80, 80);
-	mainmenu->addButton("button1", GAME, 64, 32, 32, 32);
-	mainmenu->addButton("button1", MAINMENU, 64, 32, 32, 128);
+
+	SDL_Color textColor = { 0, 0, 0 };
+	mainmenu->addButton("button1", "Game", 20, textColor, 38, 38, GAME, 64, 32, 32, 32);
+	mainmenu->addButton("button1", "Help", 20, textColor, 38, 102, MAINMENU, 64, 32, 32, 96);
+	mainmenu->addButton("button1", "Score", 20, textColor, 36, 166, MAINMENU, 64, 32, 32, 160);
+	mainmenu->addButton("button1", "Exit", 20, textColor, 38, 230, MAINMENU, 64, 32, 32, 224);
 
 	for (int x = 0; x < 20; ++x)
 	{

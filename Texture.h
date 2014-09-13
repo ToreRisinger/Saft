@@ -4,8 +4,12 @@ class Texture
 public:
 	//load texture from file
 	Texture(std::string fileName);
+	
 	//make texture with width and height and color
 	Texture(int width, int height, int red, int green, int blue);
+
+	//make texture from text
+	Texture(std::string textureText, unsigned int fontSize, SDL_Color textColor);
 	~Texture();
 
 	int getHeight();
@@ -13,8 +17,9 @@ public:
 	void render(int x, int y, int width, int height);
 
 private:
-	void Texture::loadTexture(int width, int height, int red, int green, int blue);
-	bool loadTexture(std::string fileName);
+	void loadTexture(int width, int height, int red, int green, int blue);
+	void loadTexture(std::string fileName);
+	void loadTexture(std::string textureText, SDL_Color textColor);
 	void free();
 
 	SDL_Texture* _Texture = nullptr;
@@ -36,6 +41,15 @@ Texture::Texture(int width, int height, int red, int green, int blue)
 	_Width = width;
 	_Height = height;
 	loadTexture(width, height, red, green, blue);
+}
+
+Texture::Texture(std::string textureText, unsigned int fontSize, SDL_Color textColor)
+{
+	_Texture = NULL;
+	_Width = 0;
+	_Height = 0;
+	gFont = TTF_OpenFont("res/fonts/00TT.TTF", fontSize);
+	loadTexture(textureText, textColor);
 }
 
 Texture::~Texture()
@@ -80,7 +94,7 @@ void Texture::loadTexture(int width, int height, int red, int green, int blue)
 	_Texture = newTexture;
 }
 
-bool Texture::loadTexture(std::string fileName)
+void Texture::loadTexture(std::string fileName)
 {
 	free();
 
@@ -115,13 +129,51 @@ bool Texture::loadTexture(std::string fileName)
 
 	//Return success
 	_Texture = newTexture;
-	return _Texture != NULL;
+}
+
+void Texture::loadTexture(std::string textureText, SDL_Color textColor)
+{
+	//Get rid of preexisting texture
+	free();
+
+	//Render text surface
+	SDL_Texture* newTexture = nullptr;
+	SDL_Surface* loadedSurface = TTF_RenderText_Solid(gFont, textureText.c_str(), textColor);
+
+	if (loadedSurface == NULL)
+	{
+		printf("Unable to render text surface! SDL_ttf Error: %s\n", TTF_GetError());
+	}
+	else
+	{
+		//Create texture from surface pixels
+		newTexture = SDL_CreateTextureFromSurface(gRenderer, loadedSurface);
+		if (newTexture == NULL)
+		{
+			printf("Unable to create texture from rendered text! SDL Error: %s\n", SDL_GetError());
+		}
+		else
+		{
+			//Get image dimensions
+			_Width = loadedSurface->w;
+			_Height = loadedSurface->h;
+		}
+
+		//Get rid of old surface
+		SDL_FreeSurface(loadedSurface);
+	}
+
+	//Return success
+	_Texture = newTexture;
 }
 
 void Texture::render(int x, int y, int width, int height)
 {
-	SDL_Rect renderRect = { x, y, width, height };
-	SDL_RenderCopy(gRenderer, _Texture, NULL, &renderRect);
+	if (_Texture != nullptr)
+	{
+		SDL_Rect renderRect = { x, y, width, height };
+		SDL_RenderCopy(gRenderer, _Texture, NULL, &renderRect);
+	}
 }
 
 int Texture::getHeight()
