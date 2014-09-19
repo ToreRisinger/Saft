@@ -14,6 +14,8 @@ private:
 
 Game::Game()
 {
+	state = MAINMENU;
+
 	player = new Player();
 
 	mainmenu = new Menu();
@@ -21,10 +23,10 @@ Game::Game()
 	mainmenu->addBackground(640, 480, 100, 80, 80);
 
 	SDL_Color textColor = { 0, 0, 0 };
-	mainmenu->addButton("button1", "Game", 20, textColor, 38, 38, GAME, 64, 32, 32, 32);
-	mainmenu->addButton("button1", "Help", 20, textColor, 38, 102, MAINMENU, 64, 32, 32, 96);
-	mainmenu->addButton("button1", "Score", 20, textColor, 36, 166, MAINMENU, 64, 32, 32, 160);
-	mainmenu->addButton("button1", "Exit", 20, textColor, 38, 230, MAINMENU, 64, 32, 32, 224);
+	mainmenu->addButton("button1", "Game", 20, textColor, 296, 102, GAME, 64, 32, 288, 96);
+	mainmenu->addButton("button1", "Help", 20, textColor, 296, 166, MAINMENU, 64, 32, 288, 160);
+	mainmenu->addButton("button1", "Score", 20, textColor, 292, 230, MAINMENU, 64, 32, 288, 224);
+	mainmenu->addButton("button1", "Exit", 20, textColor, 296, 294, EXIT, 64, 32, 288, 288);
 
 	for (int x = 0; x < 20; ++x)
 	{
@@ -62,6 +64,12 @@ void Game::update()
 	else if (state == GAME)
 	{
 		player->update();
+	}
+	else if (state == EXIT)
+	{
+		SDL_Event* e = new SDL_Event;
+		e->type = SDL_QUIT;
+		SDL_PushEvent(e);
 	}
 }
 

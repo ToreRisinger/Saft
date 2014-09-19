@@ -3,7 +3,8 @@ TTF_Font *gFont = nullptr;
 
 enum STATE {
 	MAINMENU,
-	GAME
+	GAME,
+	EXIT
 };
 
-STATE state = MAINMENU;
+STATE state;

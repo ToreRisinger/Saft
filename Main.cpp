@@ -80,6 +80,8 @@ int main(int argc, char* args[])
 
 			clearScreen();
 			game.render();
+
+			//Draw the screen we have prepared this gameloop, Vsync is activated to this will regulate the framerate to 60 fps
 			drawScreen();
 			
 			//----------------------------------
@@ -95,7 +97,7 @@ int main(int argc, char* args[])
 				seconds = 0;
 			}
 
-			//if this frame was to fast, we delay to slow down
+			//If Vsync isnt working, this will limit the framerate to about 60-63. Might need to make this better
 			double thisFrameTime = loopTime.getElapsedTime();
 			if (thisFrameTime < FRAME_TIME) SDL_Delay(FRAME_TIME - thisFrameTime);
 			
@@ -180,5 +182,6 @@ void close()
 
 	//Quit SDL subsystems
 	IMG_Quit();
+	TTF_Quit();
 	SDL_Quit();
 }

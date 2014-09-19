@@ -58,19 +58,18 @@ void Player::update()
 
 void Player::input(Input* input)
 {
-	if (input->getKey(SDL_SCANCODE_D))
+	if (input->getKey(SDL_SCANCODE_RIGHT))
 	{
 		x+=4;
 	}
-	if (input->getKey(SDL_SCANCODE_A))
+	if (input->getKey(SDL_SCANCODE_LEFT))
 	{
 		x-=4;
 	}
-	if (input->getKeyPressed(SDL_SCANCODE_W))
+	if (input->getKeyPressed(SDL_SCANCODE_UP))
 	{
 		yVel = 4;
 		xVel = 4;
 		jumping = true;
 	}
 }
-
