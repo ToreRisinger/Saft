@@ -12,7 +12,7 @@ public:
 	void addBackground(int width, int height, int red, int green, int blue);
 
 private:
-	Rectangle* background = nullptr;
+	Texture* background = nullptr;
 	std::vector<Button*> buttons;
 	unsigned int selectedButton;
 };
@@ -35,7 +35,7 @@ void Menu::render()
 {
 	//Render background
 	if (background != nullptr)
-		background->render();
+		background->render(0,0, 640, 480);
 
 	//Render all buttons
 	for (Button* button : buttons)
@@ -89,5 +89,5 @@ void Menu::addButton(std::string textureFileName, std::string buttonText, unsign
 
 void Menu::addBackground(int width, int height, int red, int green, int blue)
 {
-	background = new Rectangle(width, height, red, green, blue, 0, 0);
+	background = new Texture(width, height, red, green, blue);
 }

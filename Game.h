@@ -1,3 +1,4 @@
+
 class Game
 {
 public:
@@ -7,35 +8,29 @@ public:
 	void update();
 	void input(Input* input);
 private:
-	std::vector<Rectangle*> rectangles;
 	Player* player = nullptr;
 	Menu* mainmenu = nullptr;
+	Level* level = nullptr;
 };
 
 Game::Game()
 {
 	state = MAINMENU;
+	
+	//Create level
+	level = new Level();
 
-	player = new Player();
+	//Create player
+	player = new Player(level);
 
-	mainmenu = new Menu();
-
-	mainmenu->addBackground(640, 480, 100, 80, 80);
-
+	//Create Main Menu
 	SDL_Color textColor = { 0, 0, 0 };
+	mainmenu = new Menu();
+	mainmenu->addBackground(640, 480, 100, 80, 80);
 	mainmenu->addButton("button1", "Game", 20, textColor, 296, 102, GAME, 64, 32, 288, 96);
 	mainmenu->addButton("button1", "Help", 20, textColor, 296, 166, MAINMENU, 64, 32, 288, 160);
 	mainmenu->addButton("button1", "Score", 20, textColor, 292, 230, MAINMENU, 64, 32, 288, 224);
 	mainmenu->addButton("button1", "Exit", 20, textColor, 296, 294, EXIT, 64, 32, 288, 288);
-
-	for (int x = 0; x < 20; ++x)
-	{
-		for (int y = 7; y < 15; ++y)
-		{
-			Rectangle* rect = new Rectangle("bricks_darkyellow_medium", 32, 32, x*32, y*32);
-			rectangles.push_back(rect);
-		}
-	}
 }
 
 Game::~Game() {}
@@ -48,9 +43,7 @@ void Game::render()
 	}
 	else if (state == GAME)
 	{
-		for (Rectangle* rect : rectangles)
-			rect->render();
-		
+		level->render(player->getX(), player->getY());
 		player->render();
 	}
 }
@@ -64,6 +57,11 @@ void Game::update()
 	else if (state == GAME)
 	{
 		player->update();
+		if (player->isDead())
+		{
+			player->init();
+			level->init();
+		}
 	}
 	else if (state == EXIT)
 	{

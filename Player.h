@@ -1,34 +1,52 @@
-
 class Player
 {
 public:
-	Player();
+	Player(Level* level);
 	~Player();
 
 	void render();
 	void update();
 	void input(Input* input);
+	void init();
+	bool isDead();
+
+	int getX();
+	int getY();
+
+	enum jumpDirection
+	{
+		UP,
+		LEFT,
+		RIGHT
+	};
 
 private:
+	void collision();
+
+	Level* level = nullptr;
 	Texture* texture = nullptr;
+	int speed;
+	int airSpeed;
 	int x;
 	int y;
+	double gravity;
 	int width;
 	int height;
 	double yVel;
 	double xVel;
-	bool jumping;
+	double jumpPower;
+	bool dead;
+	bool onFloor;
+	bool canJump;
+	bool doubleJump;
+	jumpDirection jumpDir;
 };
 
-Player::Player()
+Player::Player(Level* l)
 {
+	level = l;
 	texture = new Texture("default_texture");
-	x = 0;
-	y = 6 * 32;
-	width = 32;
-	height = 32;
-	yVel = 0;
-	jumping = false;
+	init();
 }
 
 Player::~Player()
@@ -36,40 +54,114 @@ Player::~Player()
 	delete texture;
 }
 
+void Player::init()
+{
+	speed = 10;
+	airSpeed = 5;
+	gravity = 0.4;
+	jumpPower = 8;
+	doubleJump = true;
+
+	width = 32;
+	height = 32;
+	x = 304;
+	y = 210;
+	xVel = 0;
+	yVel = 0;
+	dead = false;
+	onFloor = false;
+	canJump = false;
+	jumpDir = UP;
+}
+
 void Player::render()
 {
-	texture->render(x, y, width, height);
+	texture->render(304, y, width, height);
 }
 
 void Player::update()
 {
-	if (y > 6 * 32)
-	{
-		yVel = 0;
-		y = 6 * 32;
-		jumping = false;
-	}
-	if (jumping) {
-		yVel = yVel - 0.15;
-		y = y - yVel;
-	}
+	yVel = yVel - gravity;
 
+	collision();
+
+	y = y - yVel;
+	x = x + xVel;
+
+	if (y > 530) dead = true;
 }
 
 void Player::input(Input* input)
 {
+	if (onFloor) xVel = 0;
+
 	if (input->getKey(SDL_SCANCODE_RIGHT))
 	{
-		x+=4;
+		if (onFloor) xVel += speed;
+		else if (jumpDir == RIGHT) xVel = speed;
+		else if (jumpDir == LEFT)
+		{
+			xVel = airSpeed;
+			jumpDir = UP;
+		}
+		else if (jumpDir == UP) xVel = airSpeed;
 	}
+
 	if (input->getKey(SDL_SCANCODE_LEFT))
 	{
-		x-=4;
+		if (onFloor) xVel += -speed;
+		else if (jumpDir == RIGHT)
+		{
+			xVel = -airSpeed;
+			jumpDir = UP;
+		}
+		else if (jumpDir == LEFT) xVel = -speed;
+		else if (jumpDir == UP) xVel = -airSpeed;
 	}
+
 	if (input->getKeyPressed(SDL_SCANCODE_UP))
 	{
-		yVel = 4;
-		xVel = 4;
-		jumping = true;
+		if (doubleJump || canJump)
+		{
+			yVel = jumpPower;
+			if (xVel > 0) jumpDir = RIGHT;
+			else if (xVel < 0) jumpDir = LEFT;
+			else if (xVel == 0) jumpDir = UP;
+		}
 	}
+}
+
+void Player::collision()
+{
+	if (level->playerCollision(x, y, xVel, yVel))
+	{
+		canJump = true;
+		onFloor = true;
+	}
+	else
+	{
+		if (onFloor == true)
+		{
+			if (xVel > 0) jumpDir = RIGHT;
+			else if (xVel < 0) jumpDir = LEFT;
+			else if (xVel == 0) jumpDir = UP;
+		}
+			
+		onFloor = false;
+		canJump = false;
+	}
+}
+
+bool Player::isDead()
+{
+	return dead;
+}
+
+int Player::getX()
+{
+	return x;
+}
+int Player::getY()
+{
+	return y;
 }

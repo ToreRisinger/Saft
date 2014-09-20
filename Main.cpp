@@ -1,3 +1,5 @@
+#include <math.h>
+#include <stdlib.h>
 #include <string>
 #include <sstream>
 #include <iostream>
@@ -9,7 +11,8 @@
 #include "Input.h"
 #include "Util.h"
 #include "Texture.h"
-#include "Rectangle.h"
+#include "Block.h"
+#include "Level.h"
 #include "Player.h"
 #include "Timer.h"
 #include "Button.h"
