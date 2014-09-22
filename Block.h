@@ -59,12 +59,12 @@ Block::~Block()
 void Block::render()
 {
 	if (_x > -29 && _x < 640 && _y > 1 && _y < 480)
-		texture->render(_x, _y, _width, _height);
+		texture->render(_x, _y - _height, _width, _height);
 }
 
 void Block::render(int offsetX, int offsetY)
 {
-	texture->render(_x - (offsetX - 304), _y, _width, _height);
+	texture->render(_x - (offsetX - 304), _y - _height, _width, _height);
 }
 
 void Block::setX(int value)

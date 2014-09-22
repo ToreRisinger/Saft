@@ -62,10 +62,10 @@ void Player::init()
 	jumpPower = 8;
 	doubleJump = true;
 
-	width = 32;
-	height = 32;
+	width = 16;
+	height = 16;
 	x = 304;
-	y = 210;
+	y = 100;
 	xVel = 0;
 	yVel = 0;
 	dead = false;
@@ -76,7 +76,7 @@ void Player::init()
 
 void Player::render()
 {
-	texture->render(304, y, width, height);
+	texture->render(304, y-height, width, height);
 }
 
 void Player::update()
@@ -95,7 +95,7 @@ void Player::input(Input* input)
 {
 	if (onFloor) xVel = 0;
 
-	if (input->getKey(SDL_SCANCODE_RIGHT))
+	if (input->getKey(SDL_SCANCODE_RIGHT) || input->getKey(SDL_SCANCODE_D))
 	{
 		if (onFloor) xVel += speed;
 		else if (jumpDir == RIGHT) xVel = speed;
@@ -107,7 +107,7 @@ void Player::input(Input* input)
 		else if (jumpDir == UP) xVel = airSpeed;
 	}
 
-	if (input->getKey(SDL_SCANCODE_LEFT))
+	if (input->getKey(SDL_SCANCODE_LEFT) || input->getKey(SDL_SCANCODE_A))
 	{
 		if (onFloor) xVel += -speed;
 		else if (jumpDir == RIGHT)
@@ -119,7 +119,7 @@ void Player::input(Input* input)
 		else if (jumpDir == UP) xVel = -airSpeed;
 	}
 
-	if (input->getKeyPressed(SDL_SCANCODE_UP))
+	if (input->getKeyPressed(SDL_SCANCODE_UP) || input->getKeyPressed(SDL_SCANCODE_W) || input->getKeyPressed(SDL_SCANCODE_SPACE))
 	{
 		if (doubleJump || canJump)
 		{
@@ -133,7 +133,7 @@ void Player::input(Input* input)
 
 void Player::collision()
 {
-	if (level->playerCollision(x, y, xVel, yVel))
+	if (level->playerCollision(x, y, xVel, yVel, width, height))
 	{
 		canJump = true;
 		onFloor = true;

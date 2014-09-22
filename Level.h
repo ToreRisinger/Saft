@@ -1,5 +1,3 @@
-
-
 class Level
 {
 public:
@@ -11,7 +9,7 @@ public:
 	void update();
 	void input(Input* input);
 	bool isBlock(int x, int y);
-	bool playerCollision(int& x, int& y, double& xVel, double& yVel);
+	bool playerCollision(int& x, int& y, double& xVel, double& yVel, int playerWidth, int playerHeight);
 	void init();
 
 private:
@@ -47,7 +45,8 @@ void Level::init()
 		else if (randNumber > 0)
 		{
 			//randNumber = rand() % (14) + 9;
-			Block* block = new Block("bricks_darkyellow_medium", 96, 32, x * 96, 8 * 32);
+			//Block* block = new Block("bricks_darkyellow_medium", 96, 32, x * 96, 8 * 32);
+			Block* block = new Block(96, 32, 0, 0, 0, x * 96, 9 * 32);
 			blocks.push_back(block);
 		}
 	}
@@ -90,26 +89,26 @@ bool Level::isBlock(int x, int y)
 }
 
 //returns true if player is on the floor
-bool Level::playerCollision(int& x, int& y, double& xVel, double& yVel)
+bool Level::playerCollision(int& x, int& y, double& xVel, double& yVel, int playerWidth, int playerHeight)
 {
 	bool playerOnFloor = false;
 
 	for (Block* block : blocks)
 	{
 		if (y - yVel >= block->getY() - block->getHeight()) // y is under
-			if (y - yVel - 31 <= block->getY()) // y is inside
-				if (x + 31 >= block->getX()) // x is to the right
+			if (y - yVel - (playerHeight - 1) <= block->getY()) // y is inside
+				if (x + (playerWidth - 1) >= block->getX()) // x is to the right
 					if (x <= block->getX() + block->getWidth() - 1) // x inside
 					{
 						if (yVel < 0)
 						{
-							y = block->getY() - 32;
+							y = block->getY() - block->getHeight();
 							yVel = 0;
 							playerOnFloor = true;
 						}
 						else if (yVel > 0)
 						{
-							y = block->getY() + 32;
+							y = block->getY() + playerHeight;
 							yVel = 0;
 						}
 					}
@@ -117,9 +116,9 @@ bool Level::playerCollision(int& x, int& y, double& xVel, double& yVel)
 
 	for (Block* block : blocks)
 	{
-		if (y >= block->getY() - 31) // y is under
-			if (y - 31 <= block->getY()) // y is inside
-				if (x + 31 + xVel >= block->getX()) // x is to the right
+		if (y >= block->getY() - (block->getHeight()-1)) // y is under
+			if (y - (playerHeight - 1) <= block->getY()) // y is inside
+				if (x + (playerWidth - 1) + xVel >= block->getX()) // x is to the right
 					if (x + xVel <= block->getX() + block->getWidth() - 1) // x inside
 					{
 						if (xVel < 0)
@@ -129,7 +128,7 @@ bool Level::playerCollision(int& x, int& y, double& xVel, double& yVel)
 						}
 						else if (xVel > 0)
 						{
-							x = block->getX() - 32;
+							x = block->getX() - playerWidth;
 							xVel = 0;
 						}
 					}
